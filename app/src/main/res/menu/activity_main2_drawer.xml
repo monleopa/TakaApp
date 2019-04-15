@@ -16,6 +16,11 @@
             android:id="@+id/editprofile"
             android:icon="@drawable/ic_menu_manage"
             android:title="Edit Profile" />
+
+        <item
+            android:id="@+id/logout"
+            android:icon="@drawable/ic_assignment_return_black_24dp"
+            android:title="Đăng xuất" />
     </group>
 
     <!--<item android:title="Communicate">-->

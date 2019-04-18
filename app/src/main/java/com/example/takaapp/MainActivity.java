@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity
 
                 if (id == R.id.profile) {
                     Toast.makeText(MainActivity.this, "My Profile", Toast.LENGTH_SHORT).show();
-                } else if (id == R.id.settings) {
+                } else if (id == R.id.danhmuc) {
                     Toast.makeText(MainActivity.this, "Settings", Toast.LENGTH_SHORT).show();
                 } else if (id == R.id.editprofile) {
                     Toast.makeText(MainActivity.this, "Edit Profile", Toast.LENGTH_SHORT).show();

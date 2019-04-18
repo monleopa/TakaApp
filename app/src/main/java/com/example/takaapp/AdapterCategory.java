@@ -47,7 +47,6 @@ public class AdapterCategory extends RecyclerView.Adapter<RecyclerView.ViewHolde
 //                Intent intent = new Intent(((ViewHolderCategory) viewHolder).context, ListItem.class);
 //                intent.putExtra("categoryID", categoryResponse.getID());
 //                context.startActivity(intent);
-
             }
         });
     }

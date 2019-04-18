@@ -5,17 +5,17 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/profile"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="Profile" />
+            android:id="@+id/danhmuc"
+            android:icon="@drawable/ic_format_list_bulleted_black_24dp"
+            android:title="Danh mục sản phẩm" />
         <item
-            android:id="@+id/settings"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="Settings" />
+            android:id="@+id/profile"
+            android:icon="@drawable/ic_account_circle_black_24dp"
+            android:title="Thông tin cá nhân" />
         <item
             android:id="@+id/editprofile"
             android:icon="@drawable/ic_menu_manage"
-            android:title="Edit Profile" />
+            android:title="Chỉnh sửa thông tin" />
 
         <item
             android:id="@+id/logout"

@@ -1,6 +1,7 @@
 package com.example.takaapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
@@ -9,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.takaapp.Dto.ItemResponse;
@@ -18,6 +20,7 @@ import java.util.List;
 public class AdapterItems extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     List<ItemResponse> list;
     private Context context;
+    private AdapterCategory.OnItemClick onItemClick;
 
     public AdapterItems(Context context, List<ItemResponse> list) {
         this.list = list;
@@ -32,8 +35,19 @@ public class AdapterItems extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     @Override
-    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
+    public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder viewHolder, int i) {
         ((ViewHolderItem) viewHolder).bindData(list.get(i));
+
+        final ItemResponse itemResponse = list.get(i);
+        ((AdapterItems.ViewHolderItem) viewHolder).item_layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(((ViewHolderItem) viewHolder).context, itemResponse.get_id(), Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(context, DetailItem.class);
+                intent.putExtra("item", itemResponse);
+                context.startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -58,7 +72,7 @@ public class AdapterItems extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
         public void bindData(ItemResponse itemResponse) {
             txtNameitem.setText(itemResponse.getName());
-            txtPriceitem.setText(String.valueOf(itemResponse.getPrice()) + " Đ");
+            txtPriceitem.setText(String.valueOf(itemResponse.getPrice()) + " đ");
 
             Glide.with(context).load(itemResponse.getImg()).into(imgItem);
         }

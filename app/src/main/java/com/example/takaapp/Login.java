@@ -35,9 +35,17 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         init();
 
         btnDangnhap.setOnClickListener(this);
+
+        sharedPreferences = getSharedPreferences("loginPre", MODE_PRIVATE);
+        editorShared = sharedPreferences.edit();
+        if (!sharedPreferences.getString("login", "0").equals("0")) {
+            Intent intent = new Intent(Login.this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+        }
     }
 
-    public void init(){
+    public void init() {
         edtTaikhoan = findViewById(R.id.edtResTaikhoan);
         edtMatkhau = findViewById(R.id.edtMatkhau);
         btnDangnhap = findViewById(R.id.btnDangnhap);
@@ -65,19 +73,17 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
             @Override
             public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
 
-                if(String.valueOf(response.code()).equals("200")){
+                if (String.valueOf(response.code()).equals("200")) {
                     UserResponse userResponse = response.body();
-
                     sharedPreferences = getSharedPreferences("loginPre", MODE_PRIVATE);
                     editorShared = sharedPreferences.edit();
                     editorShared.putString("login", userResponse.get_id());
                     editorShared.commit();
                     Intent intent = new Intent(Login.this, MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                     intent.putExtra("user", userResponse);
-                    intent.putExtra("test", "testinggggg");
                     startActivity(intent);
-                }
-                else {
+                } else {
                     Toast.makeText(Login.this, "Sai mật khẩu hoặc tài khoản", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -90,7 +96,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
     }
 
 
-    public void onDangky(View view){
+    public void onDangky(View view) {
         Intent intent = new Intent(Login.this, Register.class);
         startActivity(intent);
     }

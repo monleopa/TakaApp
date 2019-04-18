@@ -5,6 +5,10 @@
 
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/trangchu"
+            android:icon="@drawable/ic_home_black_24dp"
+            android:title="Trang chủ" />
+        <item
             android:id="@+id/danhmuc"
             android:icon="@drawable/ic_format_list_bulleted_black_24dp"
             android:title="Danh mục sản phẩm" />

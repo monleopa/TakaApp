@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -69,13 +70,11 @@ public class MainActivity extends AppCompatActivity
 
         dl = findViewById(R.id.dl);
 
-        recycle_category = findViewById(R.id.recycle_category);
-
         abdt = new ActionBarDrawerToggle(this, dl, R.string.Open, R.string.Close);
         abdt.setDrawerIndicatorEnabled(true);
         dl.addDrawerListener(abdt);
         abdt.syncState();
-
+        recycle_category = findViewById(R.id.recycle_category);
         imgMenu = findViewById(R.id.imgMenu);
         edtSearch = findViewById(R.id.edtSearch);
         edtSearch.setOnEditorActionListener(this);
@@ -90,6 +89,7 @@ public class MainActivity extends AppCompatActivity
             System.out.println(userResponse.getEmail());
             header_email.setText(userResponse.getEmail());
             header_username.setText(userResponse.getName());
+            Log.d("ducanh123", "onCreate: " + userResponse.getAvatar());
             Glide.with(this).load(userResponse.getAvatar()).into(imgAvatar);
         }
 
@@ -110,6 +110,9 @@ public class MainActivity extends AppCompatActivity
                     editorShared.putString("login", "0");
                     editorShared.commit();
                     finish();
+                } else if (id == R.id.trangchu) {
+                    Intent intent = new Intent(MainActivity.this, MainActivity.class);
+                    startActivity(intent);
                 }
 
                 return true;
@@ -160,11 +163,19 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
+    public void onBackPressed() {
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            getSupportFragmentManager().popBackStack();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
     public void onClick(String id, String name) {
-        Toast.makeText(this, id, Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(this, ListItem.class);
-        intent.putExtra("categoryName", name);
-        intent.putExtra("categoryID", id);
-        startActivity(intent);
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.add(R.id.container, ListItemFragment.newInstance(id, name));
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
     }
 }

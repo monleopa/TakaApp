@@ -2,8 +2,11 @@ package com.example.takaapp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,12 +22,12 @@ import java.util.List;
 
 public class AdapterItems extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     List<ItemResponse> list;
-    private Context context;
+    private FragmentManager fragmentManager;
     private AdapterCategory.OnItemClick onItemClick;
 
-    public AdapterItems(Context context, List<ItemResponse> list) {
+    public AdapterItems(FragmentManager fragmentManager, List<ItemResponse> list) {
         this.list = list;
-        this.context = context;
+        this.fragmentManager = fragmentManager;
     }
 
     @NonNull
@@ -42,10 +45,15 @@ public class AdapterItems extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         ((AdapterItems.ViewHolderItem) viewHolder).item_layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(((ViewHolderItem) viewHolder).context, itemResponse.get_id(), Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(context, DetailItem.class);
-                intent.putExtra("item", itemResponse);
-                context.startActivity(intent);
+//                Toast.makeText(((ViewHolderItem) viewHolder).context, itemResponse.get_id(), Toast.LENGTH_SHORT).show();
+//                Intent intent = new Intent(context, DetailItem.class);
+//                intent.putExtra("item", itemResponse);
+//                context.startActivity(intent);
+
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.add(R.id.container, DetailItemFrangment.newInstance(itemResponse));
+                fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
             }
         });
     }

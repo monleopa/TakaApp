@@ -4,13 +4,11 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.takaapp.Dto.CategoryResponse;
@@ -18,9 +16,14 @@ import com.example.takaapp.Dto.CategoryResponse;
 import java.util.List;
 
 public class AdapterCategory extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private Context context;
     private List<CategoryResponse> list;
-    public AdapterCategory(List<CategoryResponse> list) {
+    private OnItemClick onItemClick;
+
+    public AdapterCategory(OnItemClick onItemClick, List<CategoryResponse> list) {
+//        this.context = context;
         this.list = list;
+        this.onItemClick = onItemClick;
     }
 
     @NonNull
@@ -39,7 +42,12 @@ public class AdapterCategory extends RecyclerView.Adapter<RecyclerView.ViewHolde
         ((ViewHolderCategory) viewHolder).category_layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(((ViewHolderCategory) viewHolder).context, categoryResponse.getName(), Toast.LENGTH_SHORT).show();
+                onItemClick.onClick(categoryResponse.getID(), categoryResponse.getName());
+//                Toast.makeText(((ViewHolderCategory) viewHolder).context, categoryResponse.getID(), Toast.LENGTH_SHORT).show();
+//                Intent intent = new Intent(((ViewHolderCategory) viewHolder).context, ListItem.class);
+//                intent.putExtra("categoryID", categoryResponse.getID());
+//                context.startActivity(intent);
+
             }
         });
     }
@@ -67,5 +75,9 @@ public class AdapterCategory extends RecyclerView.Adapter<RecyclerView.ViewHolde
             txtCategory.setText(categoryResponse.getName());
             Glide.with(context).load(categoryResponse.getPic()).into(imgCategory);
         }
+    }
+
+    public interface OnItemClick {
+        void onClick(String id, String name);
     }
 }

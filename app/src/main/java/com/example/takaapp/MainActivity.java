@@ -37,7 +37,8 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, TextView.OnEditorActionListener {
+public class MainActivity extends AppCompatActivity
+        implements View.OnClickListener, TextView.OnEditorActionListener, AdapterCategory.OnItemClick {
 
     private DrawerLayout dl;
     private ActionBarDrawerToggle abdt;
@@ -50,19 +51,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editorShared;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         sharedPreferences = getSharedPreferences("loginPre", MODE_PRIVATE);
-        if(sharedPreferences.getString("login", "0").equals("0")){
+        if (sharedPreferences.getString("login", "0").equals("0")) {
             Intent intent = new Intent(MainActivity.this, Login.class);
             startActivity(intent);
         }
-
-//        String test = getIntent().getExtras().getString("test");
-//        System.out.println(test);
 
         imgMenu = findViewById(R.id.imgMenu);
 
@@ -86,8 +85,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         header_username = nav_view.getHeaderView(0).findViewById(R.id.header_username);
         imgAvatar = nav_view.getHeaderView(0).findViewById(R.id.imgAvatar);
 
-        if(getIntent().hasExtra("user"))
-        {
+        if (getIntent().hasExtra("user")) {
             UserResponse userResponse = (UserResponse) getIntent().getExtras().get("user");
             System.out.println(userResponse.getEmail());
             header_email.setText(userResponse.getEmail());
@@ -107,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Toast.makeText(MainActivity.this, "Settings", Toast.LENGTH_SHORT).show();
                 } else if (id == R.id.editprofile) {
                     Toast.makeText(MainActivity.this, "Edit Profile", Toast.LENGTH_SHORT).show();
-                } else if(id == R.id.logout) {
+                } else if (id == R.id.logout) {
                     editorShared = sharedPreferences.edit();
                     editorShared.putString("login", "0");
                     editorShared.commit();
@@ -132,15 +130,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             public void onResponse(Call<List<CategoryResponse>> call, Response<List<CategoryResponse>> response) {
                 List<CategoryResponse> list = new ArrayList<>();
                 list = response.body();
-                AdapterCategory ac = new AdapterCategory(list);
+                AdapterCategory ac = new AdapterCategory(MainActivity.this, list);
                 recycle_category.setAdapter(ac);
             }
+
             @Override
             public void onFailure(Call<List<CategoryResponse>> call, Throwable t) {
-
             }
         });
-
     }
 
     @Override
@@ -160,5 +157,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
         Toast.makeText(MainActivity.this, edtSearch.getText().toString(), Toast.LENGTH_LONG).show();
         return false;
+    }
+
+    @Override
+    public void onClick(String id, String name) {
+        Toast.makeText(this, id, Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(this, ListItem.class);
+        intent.putExtra("categoryName", name);
+        intent.putExtra("categoryID", id);
+        startActivity(intent);
     }
 }

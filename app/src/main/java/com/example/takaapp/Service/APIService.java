@@ -1,6 +1,7 @@
 package com.example.takaapp.Service;
 
 import com.example.takaapp.Dto.CategoryResponse;
+import com.example.takaapp.Dto.ItemResponse;
 import com.example.takaapp.Dto.UserRequestLogin;
 import com.example.takaapp.Dto.UserRequestRegister;
 import com.example.takaapp.Dto.UserResponse;
@@ -26,4 +27,7 @@ public interface APIService {
 
     @GET("categories")
     Call<List<CategoryResponse>> getAllCategory();
+
+    @GET("items/get_by_category/{id}")
+    Call<List<ItemResponse>> getAllItemsByCategory(@Path("id") String id);
 }

@@ -6,4 +6,5 @@
     <color name="white">#FFFFFF</color>
     <color name="black">#161414</color>
     <color name="priceRed">#FF0000</color>
+    <color name="orangeNumber">#F8631D</color>
 </resources>

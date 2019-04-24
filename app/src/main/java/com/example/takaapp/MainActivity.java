@@ -26,6 +26,9 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.takaapp.Dto.CategoryResponse;
+import com.example.takaapp.Dto.OrderResponse;
+import com.example.takaapp.Dto.UserRequestLogin;
+import com.example.takaapp.Dto.UserRequestRegister;
 import com.example.takaapp.Dto.UserResponse;
 import com.example.takaapp.Service.APIService;
 
@@ -46,9 +49,8 @@ public class MainActivity extends AppCompatActivity
     private ImageView imgMenu;
     private EditText edtSearch;
     private RecyclerView recycle_category;
-
     private ImageView imgAvatar;
-    private TextView header_username, header_email;
+    private TextView header_username, header_email, txtNumber;
 
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editorShared;
@@ -59,16 +61,16 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         sharedPreferences = getSharedPreferences("loginPre", MODE_PRIVATE);
-        if (sharedPreferences.getString("login", "0").equals("0")) {
-            Intent intent = new Intent(MainActivity.this, Login.class);
-            startActivity(intent);
-        }
+
+        String username = sharedPreferences.getString("username", "");
+        String password = sharedPreferences.getString("password", "");
 
         imgMenu = findViewById(R.id.imgMenu);
 
         imgMenu.setOnClickListener(this);
 
         dl = findViewById(R.id.dl);
+        txtNumber = findViewById(R.id.txtNumber);
 
         abdt = new ActionBarDrawerToggle(this, dl, R.string.Open, R.string.Close);
         abdt.setDrawerIndicatorEnabled(true);
@@ -84,13 +86,56 @@ public class MainActivity extends AppCompatActivity
         header_username = nav_view.getHeaderView(0).findViewById(R.id.header_username);
         imgAvatar = nav_view.getHeaderView(0).findViewById(R.id.imgAvatar);
 
-        if (getIntent().hasExtra("user")) {
-            UserResponse userResponse = (UserResponse) getIntent().getExtras().get("user");
-            System.out.println(userResponse.getEmail());
-            header_email.setText(userResponse.getEmail());
-            header_username.setText(userResponse.getName());
-            Log.d("ducanh123", "onCreate: " + userResponse.getAvatar());
-            Glide.with(this).load(userResponse.getAvatar()).into(imgAvatar);
+
+        if (sharedPreferences.getString("login", "0").equals("0")) {
+            Intent intent = new Intent(MainActivity.this, Login.class);
+            startActivity(intent);
+        }
+        else
+        {
+            UserRequestLogin user = new UserRequestLogin(username, password);
+
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(GlobalVariable.url)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+
+            APIService apiService = retrofit.create(APIService.class);
+
+            Call<UserResponse> callUser = apiService.login(user);
+
+            callUser.enqueue(new Callback<UserResponse>() {
+                @Override
+                public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
+
+                    if (String.valueOf(response.code()).equals("200")) {
+                        UserResponse userResponse = response.body();
+                        header_username.setText(userResponse.getName());
+                        header_email.setText(userResponse.getEmail());
+                        Glide.with(MainActivity.this).load(userResponse.getAvatar()).into(imgAvatar);
+                    } else {
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<UserResponse> call, Throwable t) {
+                    t.printStackTrace();
+                }
+            });
+
+            Call<OrderResponse> callCart = apiService.getCart(user);
+            callCart.enqueue(new Callback<OrderResponse>() {
+                @Override
+                public void onResponse(Call<OrderResponse> call, Response<OrderResponse> response) {
+                    OrderResponse cart = response.body();
+                    txtNumber.setText(cart.getItems().size()+"");
+                }
+
+                @Override
+                public void onFailure(Call<OrderResponse> call, Throwable t) {
+
+                }
+            });
         }
 
         nav_view.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
@@ -109,7 +154,10 @@ public class MainActivity extends AppCompatActivity
                     editorShared = sharedPreferences.edit();
                     editorShared.putString("login", "0");
                     editorShared.commit();
-                    finish();
+
+                    Intent intent = new Intent(MainActivity.this, Login.class);
+                    startActivity(intent);
+//                    finish();
                 } else if (id == R.id.trangchu) {
                     Intent intent = new Intent(MainActivity.this, MainActivity.class);
                     startActivity(intent);

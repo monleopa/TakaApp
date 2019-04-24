@@ -2,10 +2,11 @@ package com.example.takaapp.Service;
 
 import com.example.takaapp.Dto.CategoryResponse;
 import com.example.takaapp.Dto.ItemResponse;
+import com.example.takaapp.Dto.OrderRequest;
+import com.example.takaapp.Dto.OrderResponse;
 import com.example.takaapp.Dto.UserRequestLogin;
 import com.example.takaapp.Dto.UserRequestRegister;
 import com.example.takaapp.Dto.UserResponse;
-import com.example.takaapp.User;
 
 import java.util.List;
 
@@ -30,4 +31,10 @@ public interface APIService {
 
     @GET("items/get_by_category/{id}")
     Call<List<ItemResponse>> getAllItemsByCategory(@Path("id") String id);
+
+    @POST("orders/add_to_cart")
+    Call<OrderResponse> getOrder(@Body OrderRequest order);
+
+    @POST("orders/cart")
+    Call<OrderResponse> getCart(@Body UserRequestLogin user);
 }

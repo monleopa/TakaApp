@@ -43,10 +43,6 @@ public class AdapterCategory extends RecyclerView.Adapter<RecyclerView.ViewHolde
             @Override
             public void onClick(View v) {
                 onItemClick.onClick(categoryResponse.getID(), categoryResponse.getName());
-//                Toast.makeText(((ViewHolderCategory) viewHolder).context, categoryResponse.getID(), Toast.LENGTH_SHORT).show();
-//                Intent intent = new Intent(((ViewHolderCategory) viewHolder).context, ListItem.class);
-//                intent.putExtra("categoryID", categoryResponse.getID());
-//                context.startActivity(intent);
             }
         });
     }

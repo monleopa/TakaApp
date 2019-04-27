@@ -72,7 +72,7 @@ public class DetailItemFrangment extends Fragment implements View.OnClickListene
         txtNumber = getActivity().findViewById(R.id.txtNumber);
 
         ItemResponse itemResponse = (ItemResponse) getArguments().getSerializable("item");
-//        Log.d("ducanh123", "onCreateView: ");
+
         Glide.with(this).load(itemResponse.getImg()).into(imgItemDetail);
         txtItemDetailName.setText(itemResponse.getName());
         txtBrand.setText(itemResponse.getBrand());

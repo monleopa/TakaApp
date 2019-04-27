@@ -153,6 +153,8 @@ public class MainActivity extends AppCompatActivity
                 } else if (id == R.id.logout) {
                     editorShared = sharedPreferences.edit();
                     editorShared.putString("login", "0");
+                    editorShared.putString("username", "");
+                    editorShared.putString("password", "");
                     editorShared.commit();
 
                     Intent intent = new Intent(MainActivity.this, Login.class);
@@ -223,6 +225,14 @@ public class MainActivity extends AppCompatActivity
     public void onClick(String id, String name) {
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.add(R.id.container, ListItemFragment.newInstance(id, name));
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+    }
+
+
+    public void viewCart(View view) {
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.add(R.id.container, CartFragment.newInstance());
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }

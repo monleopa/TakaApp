@@ -1,8 +1,6 @@
 package com.example.takaapp;
 
 import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.FragmentManager;
@@ -13,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.takaapp.Dto.ItemResponse;
@@ -45,11 +42,6 @@ public class AdapterItems extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         ((AdapterItems.ViewHolderItem) viewHolder).item_layout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Toast.makeText(((ViewHolderItem) viewHolder).context, itemResponse.get_id(), Toast.LENGTH_SHORT).show();
-//                Intent intent = new Intent(context, DetailItem.class);
-//                intent.putExtra("item", itemResponse);
-//                context.startActivity(intent);
-
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.add(R.id.container, DetailItemFrangment.newInstance(itemResponse));
                 fragmentTransaction.addToBackStack(null);
@@ -71,9 +63,9 @@ public class AdapterItems extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
         public ViewHolderItem(@NonNull View itemView, Context context) {
             super(itemView);
-            imgItem = itemView.findViewById(R.id.imgItem);
-            txtNameitem = itemView.findViewById(R.id.txtNameitem);
-            txtPriceitem = itemView.findViewById(R.id.txtPriceitem);
+            imgItem = itemView.findViewById(R.id.imgItemCart);
+            txtNameitem = itemView.findViewById(R.id.txtNameCart);
+            txtPriceitem = itemView.findViewById(R.id.txtPriceCart);
             item_layout = itemView.findViewById(R.id.item_layout);
             this.context = context;
         }

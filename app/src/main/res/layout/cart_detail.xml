@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <android.support.v7.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/white">
+    android:layout_marginTop="8dp">
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/cart_layout"
@@ -14,7 +13,7 @@
         android:layout_height="wrap_content">
 
         <ImageView
-            android:id="@+id/imgItem"
+            android:id="@+id/imgItemCart"
             android:layout_width="170dp"
             android:layout_height="170dp"
             android:layout_marginStart="8dp"
@@ -26,7 +25,7 @@
             tools:srcCompat="@tools:sample/avatars" />
 
         <TextView
-            android:id="@+id/txtNameitem"
+            android:id="@+id/txtNameCart"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -34,11 +33,11 @@
             android:text="TextView"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/imgItem"
+            app:layout_constraintStart_toEndOf="@+id/imgItemCart"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/txtPriceitem"
+            android:id="@+id/txtPriceCart"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -48,8 +47,8 @@
             android:textColor="@color/priceRed"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/imgItem"
-            app:layout_constraintTop_toBottomOf="@+id/txtNameitem" />
+            app:layout_constraintStart_toEndOf="@+id/imgItemCart"
+            app:layout_constraintTop_toBottomOf="@+id/txtNameCart" />
 
         <TextView
             android:id="@+id/textView5"
@@ -58,8 +57,8 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="28dp"
             android:text="Số lượng:"
-            app:layout_constraintStart_toEndOf="@+id/imgItem"
-            app:layout_constraintTop_toBottomOf="@+id/txtPriceitem" />
+            app:layout_constraintStart_toEndOf="@+id/imgItemCart"
+            app:layout_constraintTop_toBottomOf="@+id/txtPriceCart" />
 
         <Button
             android:id="@+id/button"
@@ -68,8 +67,8 @@
             android:layout_marginStart="12dp"
             android:layout_marginTop="20dp"
             android:text="+"
-            app:layout_constraintStart_toEndOf="@+id/textView6"
-            app:layout_constraintTop_toBottomOf="@+id/txtPriceitem" />
+            app:layout_constraintStart_toEndOf="@+id/txtSoluongCart"
+            app:layout_constraintTop_toBottomOf="@+id/txtPriceCart" />
 
         <Button
             android:id="@+id/button2"
@@ -79,17 +78,17 @@
             android:layout_marginTop="20dp"
             android:text="-"
             app:layout_constraintStart_toEndOf="@+id/textView5"
-            app:layout_constraintTop_toBottomOf="@+id/txtPriceitem" />
+            app:layout_constraintTop_toBottomOf="@+id/txtPriceCart" />
 
         <TextView
-            android:id="@+id/textView6"
+            android:id="@+id/txtSoluongCart"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
             android:layout_marginTop="28dp"
             android:text="0"
             app:layout_constraintStart_toEndOf="@+id/button2"
-            app:layout_constraintTop_toBottomOf="@+id/txtPriceitem" />
+            app:layout_constraintTop_toBottomOf="@+id/txtPriceCart" />
     </android.support.constraint.ConstraintLayout>
 
 </android.support.v7.widget.CardView>

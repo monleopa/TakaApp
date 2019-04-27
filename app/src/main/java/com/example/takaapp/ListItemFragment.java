@@ -78,6 +78,7 @@ public class ListItemFragment extends Fragment {
 
             }
         });
+
         return view;
 
     }

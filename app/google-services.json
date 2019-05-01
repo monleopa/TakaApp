@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "332772514153",
+    "firebase_url": "https://takaapp-76adb.firebaseio.com",
+    "project_id": "takaapp-76adb",
+    "storage_bucket": "takaapp-76adb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:332772514153:android:b89a3c7bbb89e5e0",
+        "android_client_info": {
+          "package_name": "com.example.takaapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "332772514153-j8ql0d776pfbj2k6ujcf7omtd8l73p9c.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.takaapp",
+            "certificate_hash": "37feb53f1704b73ab705a91ff72bd8f6f747df0a"
+          }
+        },
+        {
+          "client_id": "332772514153-uf05vt2bvludd8h9g6nghlb35hqffdfo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAcxdk8OfQXYIBOP34962hYPJxv1V3s8xc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "332772514153-uf05vt2bvludd8h9g6nghlb35hqffdfo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

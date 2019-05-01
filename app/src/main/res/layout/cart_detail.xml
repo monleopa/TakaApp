@@ -60,35 +60,28 @@
             app:layout_constraintStart_toEndOf="@+id/imgItemCart"
             app:layout_constraintTop_toBottomOf="@+id/txtPriceCart" />
 
-        <Button
-            android:id="@+id/button"
-            android:layout_width="35dp"
-            android:layout_height="40dp"
-            android:layout_marginStart="12dp"
-            android:layout_marginTop="20dp"
-            android:text="+"
-            app:layout_constraintStart_toEndOf="@+id/txtSoluongCart"
-            app:layout_constraintTop_toBottomOf="@+id/txtPriceCart" />
-
-        <Button
-            android:id="@+id/button2"
-            android:layout_width="35dp"
-            android:layout_height="40dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="20dp"
-            android:text="-"
-            app:layout_constraintStart_toEndOf="@+id/textView5"
-            app:layout_constraintTop_toBottomOf="@+id/txtPriceCart" />
-
         <TextView
             android:id="@+id/txtSoluongCart"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="28dp"
             android:text="0"
-            app:layout_constraintStart_toEndOf="@+id/button2"
+            app:layout_constraintStart_toEndOf="@+id/textView5"
             app:layout_constraintTop_toBottomOf="@+id/txtPriceCart" />
+
+        <ImageView
+            android:id="@+id/btnDeleteCart"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:src="@drawable/ic_delete_black_24dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@+id/imgItemCart" />
     </android.support.constraint.ConstraintLayout>
 
 </android.support.v7.widget.CardView>

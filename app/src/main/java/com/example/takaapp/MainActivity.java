@@ -127,8 +127,10 @@ public class MainActivity extends AppCompatActivity
             callCart.enqueue(new Callback<OrderResponse>() {
                 @Override
                 public void onResponse(Call<OrderResponse> call, Response<OrderResponse> response) {
-                    OrderResponse cart = response.body();
-                    txtNumber.setText(cart.getItems().size()+"");
+                    if (String.valueOf(response.code()).equals("200")) {
+                        OrderResponse cart = response.body();
+                        txtNumber.setText(cart.getItems().size() + "");
+                    }
                 }
 
                 @Override

@@ -10,6 +10,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 
 import com.example.takaapp.Dto.OrderResponse;
 import com.example.takaapp.Dto.UserRequestLogin;
@@ -21,9 +23,13 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class CartFragment extends Fragment {
+public class CartFragment extends Fragment implements AdapterCart.OnItemClickLisener {
     SharedPreferences sharedPreferences;
     private RecyclerView recycle_cart;
+    private AdapterCart adapterCart;
+
+    Button btnOrderBuy;
+    TextView txtTotalCart, txtSizeCart;
 
     public static Fragment newInstance() {
         Fragment fragment = new CartFragment();
@@ -48,7 +54,9 @@ public class CartFragment extends Fragment {
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_cart, container, false);
 
         recycle_cart = view.findViewById(R.id.recycle_cart);
-        Log.d("TEST", "vao dc day roi ne ");
+        btnOrderBuy = view.findViewById(R.id.btnOrderBuy);
+        txtSizeCart = view.findViewById(R.id.txtSizeCart);
+        txtTotalCart = view.findViewById(R.id.txtTotalCart);
 
         sharedPreferences = getActivity().getSharedPreferences("loginPre", Context.MODE_PRIVATE);
         String username = sharedPreferences.getString("username", "");
@@ -68,8 +76,10 @@ public class CartFragment extends Fragment {
             @Override
             public void onResponse(Call<OrderResponse> call, Response<OrderResponse> response) {
                 OrderResponse cart = response.body();
-                AdapterCart ac = new AdapterCart(cart.getItems(), getActivity().getSupportFragmentManager());
-                recycle_cart.setAdapter(ac);
+                adapterCart = new AdapterCart(CartFragment.this, cart.getItems(), getActivity().getSupportFragmentManager());
+                recycle_cart.setAdapter(adapterCart);
+                txtTotalCart.setText(String.valueOf(cart.getTotal()) + " đ");
+                txtSizeCart.setText(String.valueOf(cart.getItems().size()) + " sản phẩm");
             }
 
             @Override
@@ -84,4 +94,8 @@ public class CartFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onDeleteCart(int position) {
+        adapterCart.removeItem(position);
+    }
 }

@@ -89,17 +89,31 @@
         app:layout_constraintTop_toBottomOf="@+id/btnDangnhap"
         android:onClick="onDangky"/>
 
-    <Button
-        android:id="@+id/btnFacebook"
+    <!--<Button-->
+        <!--android:id="@+id/btnFacebook"-->
+        <!--android:layout_width="292dp"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginStart="8dp"-->
+        <!--android:layout_marginTop="16dp"-->
+        <!--android:layout_marginEnd="8dp"-->
+        <!--android:text="Đăng nhập bằng Facebook"-->
+        <!--app:layout_constraintEnd_toEndOf="parent"-->
+        <!--app:layout_constraintHorizontal_bias="0.495"-->
+        <!--app:layout_constraintStart_toStartOf="parent"-->
+        <!--app:layout_constraintTop_toBottomOf="@+id/btnDangky" />-->
+
+
+    <com.facebook.login.widget.LoginButton
+        android:id="@+id/buttonFacebookLogin"
         android:layout_width="292dp"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
         android:layout_marginStart="8dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="8dp"
-        android:text="Đăng nhập bằng Facebook"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnDangky" />
+        app:layout_constraintTop_toBottomOf="@+id/btnDangky"
+        />
 
 </android.support.constraint.ConstraintLayout>

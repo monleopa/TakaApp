@@ -10,6 +10,9 @@
     <string name="Open">open</string>
     <string name="Close">close</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
+    <string name="facebook_app_id">656462748132778</string>
+    <string name="fb_login_protocol_scheme">fb656462748132778</string>
+
+
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

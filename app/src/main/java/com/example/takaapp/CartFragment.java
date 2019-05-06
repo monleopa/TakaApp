@@ -1,10 +1,13 @@
 package com.example.takaapp;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,8 +15,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.takaapp.Dto.ItemResponse;
 import com.example.takaapp.Dto.OrderResponse;
+import com.example.takaapp.Dto.UserRequest;
 import com.example.takaapp.Dto.UserRequestLogin;
 import com.example.takaapp.Service.APIService;
 
@@ -59,10 +65,10 @@ public class CartFragment extends Fragment implements AdapterCart.OnItemClickLis
         txtTotalCart = view.findViewById(R.id.txtTotalCart);
 
         sharedPreferences = getActivity().getSharedPreferences("loginPre", Context.MODE_PRIVATE);
-        String username = sharedPreferences.getString("username", "");
-        String password = sharedPreferences.getString("password", "");
+        String login = sharedPreferences.getString("login", "");
+        String type = sharedPreferences.getString("loginType", "");
 
-        UserRequestLogin user = new UserRequestLogin(username, password);
+        UserRequest user = new UserRequest(login, type);
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(GlobalVariable.url)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -89,6 +95,15 @@ public class CartFragment extends Fragment implements AdapterCart.OnItemClickLis
         });
 
 
+        btnOrderBuy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), OrderBuy.class);
+                startActivity(intent);
+            }
+        });
+
+
 
 
         return view;
@@ -96,6 +111,79 @@ public class CartFragment extends Fragment implements AdapterCart.OnItemClickLis
 
     @Override
     public void onDeleteCart(int position) {
-        adapterCart.removeItem(position);
+        deleteAlert("Xóa sản phẩm", "Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng?", position);
+    }
+
+    public void deleteAlert(String title, String message, final int position) {
+        final AlertDialog.Builder builderSinger = new AlertDialog.Builder(getActivity());
+        builderSinger.setIcon(R.drawable.alert);
+        builderSinger.setTitle(title);
+        builderSinger.setMessage(message);
+
+        sharedPreferences = getActivity().getSharedPreferences("loginPre", Context.MODE_PRIVATE);
+        final String login = sharedPreferences.getString("login", "");
+        final String type = sharedPreferences.getString("loginType", "");
+
+        builderSinger.setPositiveButton(
+                "Đồng ý",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int i) {
+                        String id = adapterCart.takeIdItem(position);
+
+                        Retrofit retrofit = new Retrofit.Builder()
+                                .baseUrl(GlobalVariable.url)
+                                .addConverterFactory(GsonConverterFactory.create())
+                                .build();
+
+                        APIService apiService = retrofit.create(APIService.class);
+
+                        UserRequest userRequest = new UserRequest(login, type);
+
+                        Log.d("delete", "delete: " + login);
+                        Log.d("delete", "delete: " + type);
+                        Log.d("delete", "delete: " + id);
+
+
+                        Call<OrderResponse> deleteItem = apiService.deleteFromCart(id, userRequest);
+
+                        deleteItem.enqueue(new Callback<OrderResponse>() {
+                            @Override
+                            public void onResponse(Call<OrderResponse> call, Response<OrderResponse> response) {
+                                Log.d("delete", "delete: " + response.code());
+                                if(response.code() == 200) {
+                                    int size = (response.body().getItems().size());
+                                    txtSizeCart.setText(String.valueOf(size));
+                                    TextView txtNumber = getActivity().findViewById(R.id.txtNumber);
+                                    txtNumber.setText(String.valueOf(size));
+                                    txtTotalCart.setText(String.valueOf(response.body().getTotal()));
+                                    adapterCart.removeItem(position);
+                                    Toast.makeText(getActivity(),"Thành công !!!", Toast.LENGTH_SHORT).show();
+
+                                } else {
+                                    Toast.makeText(getActivity(),"Lỗi !!!", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<OrderResponse> call, Throwable t) {
+
+                            }
+                        });
+                    }
+                }
+        );
+
+        builderSinger.setNegativeButton(
+                "Hủy bỏ",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int i) {
+
+                    }
+                }
+        );
+
+        builderSinger.show();
     }
 }

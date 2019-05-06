@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 public class OrderRequest {
     @Expose
     @SerializedName("user")
-    private UserRequestLogin user;
+    private UserRequest user;
 
     @Expose
     @SerializedName("number")
@@ -16,17 +16,17 @@ public class OrderRequest {
     @SerializedName("itemId")
     private String itemId;
 
-    public OrderRequest(UserRequestLogin user, int number, String itemId) {
+    public OrderRequest(UserRequest user, int number, String itemId) {
         this.user = user;
         this.number = number;
         this.itemId = itemId;
     }
 
-    public UserRequestLogin getUser() {
+    public UserRequest getUser() {
         return user;
     }
 
-    public void setUser(UserRequestLogin user) {
+    public void setUser(UserRequest user) {
         this.user = user;
     }
 

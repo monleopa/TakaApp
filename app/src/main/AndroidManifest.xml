@@ -3,6 +3,7 @@
     package="com.example.takaapp">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -12,7 +13,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".OrderBuy"></activity>
+        <activity android:name=".BuyResult"></activity>
+        <activity android:name=".EditUser" />
+        <activity android:name=".OrderBuy" />
         <activity android:name=".Register" />
         <activity android:name=".Login">
             <intent-filter>

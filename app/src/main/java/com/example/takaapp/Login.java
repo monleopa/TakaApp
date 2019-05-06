@@ -16,11 +16,18 @@ import android.widget.Toast;
 import com.example.takaapp.Dto.UserRequestLogin;
 import com.example.takaapp.Dto.UserResponse;
 import com.example.takaapp.Service.APIService;
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.Profile;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -42,6 +49,9 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
     private CallbackManager mCallbackManager;
     private static final String TAG = "FACELOG";
 
+    private String nameFb = "";
+    private String avatar = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,25 +69,85 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
             startActivity(intent);
         }
 
-        Log.d(TAG, "onCreate: " + getKey());
         // Initialize Facebook Login button
         mCallbackManager = CallbackManager.Factory.create();
         LoginButton loginButton = findViewById(R.id.buttonFacebookLogin);
         loginButton.setReadPermissions("email", "public_profile");
+
         loginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                Log.d(TAG, "facebook:onSuccess:" + loginResult);
-                //handleFacebookAccessToken(loginResult.getAccessToken());
+//                Log.d(TAG, "facebook:onSuccess:" + loginResult);
                 sharedPreferences = getSharedPreferences("loginPre", MODE_PRIVATE);
                 editorShared = sharedPreferences.edit();
                 editorShared.putString("login", loginResult.getAccessToken().getUserId());
+                editorShared.putString("loginType", "FB");
                 editorShared.commit();
 
-                Intent intent = new Intent(Login.this, MainActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(intent);
+//                getNameFaceBook(loginResult);
+
+                Profile profile = Profile.getCurrentProfile();
+
+                avatar = profile.getProfilePictureUri(200,200).toString();
+                nameFb = profile.getName();
+
+                Log.d(TAG, "avatar: " + avatar);
+                Log.d(TAG, "test: " + nameFb);
+
+                String userId = loginResult.getAccessToken().getUserId();
+
+                UserRequestLogin user = new UserRequestLogin(userId, "FB", avatar, nameFb, "", "");
+
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl(GlobalVariable.url)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
+
+                APIService apiService = retrofit.create(APIService.class);
+
+                Call<UserResponse> callUser = apiService.login(user);
+
+                callUser.enqueue(new Callback<UserResponse>() {
+                    @Override
+                    public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
+                        if(String.valueOf(response.code()).equals("200")) {
+                            Intent intent = new Intent(Login.this, MainActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<UserResponse> call, Throwable t) {
+                        Log.d(TAG, "facebook:onSuccess: That Bai");
+                        t.printStackTrace();
+                    }
+                });
             }
+
+
+
+//            protected void getNameFaceBook(final LoginResult loginResult){
+//                GraphRequest request = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
+//                    @Override
+//                    public void onCompleted(JSONObject object, GraphResponse response) {
+//                        try {
+//
+//                            Log.d(TAG, "avatar: " + avatar);
+//                            Log.d(TAG, "test: " + object.getString("name"));
+//                            nameFb = object.getString("name");
+//                            Log.d(TAG, "test 3: " + nameFb);
+//
+//
+//
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                });
+//
+//                request.executeAsync();
+//            }
 
             @Override
             public void onCancel() {
@@ -94,38 +164,38 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
 
     }
 
-    private String getKey(){
-
-            PackageInfo packageInfo;
-            String key = null;
-            try {
-                //getting application package name, as defined in manifest
-                String packageName = this.getApplicationContext().getPackageName();
-
-                //Retriving package info
-                packageInfo = getPackageManager().getPackageInfo(packageName,
-                        PackageManager.GET_SIGNATURES);
-
-                Log.e("Package Name=", getApplicationContext().getPackageName());
-
-                for (android.content.pm.Signature signature : packageInfo.signatures) {
-                    MessageDigest md = MessageDigest.getInstance("SHA");
-                    md.update(signature.toByteArray());
-                    key = new String(Base64.encode(md.digest(), 0));
-
-                    // String key = new String(Base64.encodeBytes(md.digest()));
-                    Log.e("Key Hash=", key);
-                }
-            } catch (PackageManager.NameNotFoundException e1) {
-                Log.e("Name not found", e1.toString());
-            } catch (NoSuchAlgorithmException e) {
-                Log.e("No such an algorithm", e.toString());
-            } catch (Exception e) {
-                Log.e("Exception", e.toString());
-            }
-
-            return key;
-    }
+//    private String getKey(){
+//
+//            PackageInfo packageInfo;
+//            String key = null;
+//            try {
+//                //getting application package name, as defined in manifest
+//                String packageName = this.getApplicationContext().getPackageName();
+//
+//                //Retriving package info
+//                packageInfo = getPackageManager().getPackageInfo(packageName,
+//                        PackageManager.GET_SIGNATURES);
+//
+//                Log.e("Package Name=", getApplicationContext().getPackageName());
+//
+//                for (android.content.pm.Signature signature : packageInfo.signatures) {
+//                    MessageDigest md = MessageDigest.getInstance("SHA");
+//                    md.update(signature.toByteArray());
+//                    key = new String(Base64.encode(md.digest(), 0));
+//
+//                    // String key = new String(Base64.encodeBytes(md.digest()));
+//                    Log.e("Key Hash=", key);
+//                }
+//            } catch (PackageManager.NameNotFoundException e1) {
+//                Log.e("Name not found", e1.toString());
+//            } catch (NoSuchAlgorithmException e) {
+//                Log.e("No such an algorithm", e.toString());
+//            } catch (Exception e) {
+//                Log.e("Exception", e.toString());
+//            }
+//
+//            return key;
+//    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -147,7 +217,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         String username = String.valueOf(edtTaikhoan.getText());
         String password = String.valueOf(edtMatkhau.getText());
 
-        UserRequestLogin user = new UserRequestLogin(username, password);
+        UserRequestLogin user = new UserRequestLogin("","NORMAL","","",username, password);
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(GlobalVariable.url)
@@ -167,12 +237,10 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                     sharedPreferences = getSharedPreferences("loginPre", MODE_PRIVATE);
                     editorShared = sharedPreferences.edit();
                     editorShared.putString("login", userResponse.get_id());
-                    editorShared.putString("username", userResponse.getUsername());
-                    editorShared.putString("password", userResponse.getPassword());
+                    editorShared.putString("loginType", "NORMAL");
                     editorShared.commit();
                     Intent intent = new Intent(Login.this, MainActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                    intent.putExtra("user", userResponse);
                     startActivity(intent);
                 } else {
                     Toast.makeText(Login.this, "Sai mật khẩu hoặc tài khoản", Toast.LENGTH_SHORT).show();

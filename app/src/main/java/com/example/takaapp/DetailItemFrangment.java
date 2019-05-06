@@ -18,6 +18,7 @@ import com.bumptech.glide.Glide;
 import com.example.takaapp.Dto.ItemResponse;
 import com.example.takaapp.Dto.OrderRequest;
 import com.example.takaapp.Dto.OrderResponse;
+import com.example.takaapp.Dto.UserRequest;
 import com.example.takaapp.Dto.UserRequestLogin;
 import com.example.takaapp.Dto.UserResponse;
 import com.example.takaapp.Service.APIService;
@@ -120,10 +121,10 @@ public class DetailItemFrangment extends Fragment implements View.OnClickListene
         int soluong = Integer.parseInt(txtSoLuong.getText().toString());
 
         sharedPreferences = getActivity().getSharedPreferences("loginPre", Context.MODE_PRIVATE);
-        String username = sharedPreferences.getString("username", "");
-        String password = sharedPreferences.getString("password", "");
+        String id = sharedPreferences.getString("login", "");
+        String type = sharedPreferences.getString("loginType", "");
 
-        UserRequestLogin user = new UserRequestLogin(username, password);
+        UserRequest user = new UserRequest(id, type);
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(GlobalVariable.url)
@@ -136,8 +137,6 @@ public class DetailItemFrangment extends Fragment implements View.OnClickListene
 
         Call<OrderResponse> callOrder = apiService.getOrder(order);
 
-        Log.d("response", username);
-        Log.d("response", password);
         Log.d("response",txtSoLuong.getText().toString() );
         Log.d("response", itemResponse.get_id());
 

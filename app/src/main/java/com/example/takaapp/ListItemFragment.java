@@ -5,10 +5,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.takaapp.Dto.ItemResponse;
 import com.example.takaapp.Service.APIService;
@@ -51,33 +53,78 @@ public class ListItemFragment extends Fragment {
         recycle_item = view.findViewById(R.id.recycle_item);
         txtCategoryItem = view.findViewById(R.id.txtCategoryItem);
 
-        String categoryID = getArguments().getString("categoryID");
-        String categoryName = getArguments().getString("categoryName");
+        final String categoryID = getArguments().getString("categoryID");
+        final String categoryName = getArguments().getString("categoryName");
 
-        txtCategoryItem.setText(categoryName);
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(GlobalVariable.url)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+        txtCategoryItem.setText("loading ...");
 
-        APIService apiService = retrofit.create(APIService.class);
+        if(categoryID.equals("search")) {
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(GlobalVariable.url)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
 
-        Call<List<ItemResponse>> callItems = apiService.getAllItemsByCategory(categoryID);
+            APIService apiService = retrofit.create(APIService.class);
+            Log.d("search", categoryName);
+            Call<List<ItemResponse>> callItems = apiService.getAllItemsByName(categoryName);
 
-        callItems.enqueue(new Callback<List<ItemResponse>>() {
-            @Override
-            public void onResponse(Call<List<ItemResponse>> call, Response<List<ItemResponse>> response) {
-                List<ItemResponse> list;
-                list = response.body();
-                AdapterItems ai = new AdapterItems(getActivity().getSupportFragmentManager(), list);
-                recycle_item.setAdapter(ai);
-            }
+            callItems.enqueue(new Callback<List<ItemResponse>>() {
+                @Override
+                public void onResponse(Call<List<ItemResponse>> call, Response<List<ItemResponse>> response) {
+                    if (String.valueOf(response.code()).equals("200")) {
+                        List<ItemResponse> list = response.body();
+                        if(list.size() > 0){
+                            txtCategoryItem.setText(categoryName);
+                            AdapterItems ai = new AdapterItems(getActivity().getSupportFragmentManager(), list);
+                            recycle_item.setAdapter(ai);
+                        } else {
+                            txtCategoryItem.setText("Chưa có sản phẩm nào có tên: "+categoryName);
+                        }
 
-            @Override
-            public void onFailure(Call<List<ItemResponse>> call, Throwable t) {
+                    } else {
+                        Toast.makeText(getActivity(), "Hiện chưa có sản phẩm này", Toast.LENGTH_SHORT).show();
+                    }
+                }
 
-            }
-        });
+                @Override
+                public void onFailure(Call<List<ItemResponse>> call, Throwable t) {
+
+                }
+            });
+        }
+        else {
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(GlobalVariable.url)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+
+            APIService apiService = retrofit.create(APIService.class);
+
+            Call<List<ItemResponse>> callItems = apiService.getAllItemsByCategory(categoryID);
+
+            callItems.enqueue(new Callback<List<ItemResponse>>() {
+                @Override
+                public void onResponse(Call<List<ItemResponse>> call, Response<List<ItemResponse>> response) {
+                    if (String.valueOf(response.code()).equals("200")) {
+                        List<ItemResponse> list = response.body();
+                        if (list.size() > 0) {
+                            Log.d("TEST","so luong: "+list.size() );
+                            txtCategoryItem.setText(categoryName);
+                            AdapterItems ai = new AdapterItems(getActivity().getSupportFragmentManager(), list);
+                            recycle_item.setAdapter(ai);
+                        }
+                        else {
+                            txtCategoryItem.setText("Chưa có sản phẩm nào có tên: "+categoryName);
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<List<ItemResponse>> call, Throwable t) {
+
+                }
+            });
+        }
 
         return view;
 

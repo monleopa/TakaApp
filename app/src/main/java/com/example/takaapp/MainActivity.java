@@ -1,14 +1,17 @@
 package com.example.takaapp;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
@@ -19,6 +22,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -27,6 +31,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.takaapp.Dto.CategoryResponse;
 import com.example.takaapp.Dto.OrderResponse;
+import com.example.takaapp.Dto.UserRequest;
 import com.example.takaapp.Dto.UserRequestLogin;
 import com.example.takaapp.Dto.UserRequestRegister;
 import com.example.takaapp.Dto.UserResponse;
@@ -50,7 +55,7 @@ public class MainActivity extends AppCompatActivity
     private EditText edtSearch;
     private RecyclerView recycle_category;
     private ImageView imgAvatar;
-    private TextView header_username, header_email, txtNumber;
+    private TextView header_username, header_email, txtNumber, txtDanhMuc;
 
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editorShared;
@@ -61,9 +66,6 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         sharedPreferences = getSharedPreferences("loginPre", MODE_PRIVATE);
-
-        String username = sharedPreferences.getString("username", "");
-        String password = sharedPreferences.getString("password", "");
 
         imgMenu = findViewById(R.id.imgMenu);
 
@@ -79,6 +81,7 @@ public class MainActivity extends AppCompatActivity
         recycle_category = findViewById(R.id.recycle_category);
         imgMenu = findViewById(R.id.imgMenu);
         edtSearch = findViewById(R.id.edtSearch);
+        txtDanhMuc = findViewById(R.id.txtDanhMuc);
         edtSearch.setOnEditorActionListener(this);
 
         NavigationView nav_view = findViewById(R.id.nav_view);
@@ -93,7 +96,11 @@ public class MainActivity extends AppCompatActivity
         }
         else
         {
-            UserRequestLogin user = new UserRequestLogin(username, password);
+            String userId = sharedPreferences.getString("login", "");
+            Log.d("Login", userId);
+            String loginType = sharedPreferences.getString("loginType", "");
+
+            UserRequest user = new UserRequest(userId, loginType);
 
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(GlobalVariable.url)
@@ -102,7 +109,7 @@ public class MainActivity extends AppCompatActivity
 
             APIService apiService = retrofit.create(APIService.class);
 
-            Call<UserResponse> callUser = apiService.login(user);
+            Call<UserResponse> callUser = apiService.getUser(user);
 
             callUser.enqueue(new Callback<UserResponse>() {
                 @Override
@@ -112,8 +119,9 @@ public class MainActivity extends AppCompatActivity
                         UserResponse userResponse = response.body();
                         header_username.setText(userResponse.getName());
                         header_email.setText(userResponse.getEmail());
-                        Glide.with(MainActivity.this).load(userResponse.getAvatar()).into(imgAvatar);
-                    } else {
+                        if(userResponse.getAvatar() != null) {
+                            Glide.with(MainActivity.this).load(userResponse.getAvatar()).into(imgAvatar);
+                        }
                     }
                 }
 
@@ -145,22 +153,22 @@ public class MainActivity extends AppCompatActivity
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int id = item.getItemId();
-
                 if (id == R.id.profile) {
                     Toast.makeText(MainActivity.this, "My Profile", Toast.LENGTH_SHORT).show();
                 } else if (id == R.id.danhmuc) {
                     Toast.makeText(MainActivity.this, "Settings", Toast.LENGTH_SHORT).show();
                 } else if (id == R.id.editprofile) {
-                    Toast.makeText(MainActivity.this, "Edit Profile", Toast.LENGTH_SHORT).show();
+                    String loginType = sharedPreferences.getString("loginType", "");
+                    if(loginType.equals("FB"))
+                    {
+                        Toast.makeText(MainActivity.this, "Đăng nhập bằng facebook không thể chỉnh sửa", Toast.LENGTH_SHORT).show();
+                    }
+                    else {
+                        Intent intent = new Intent(MainActivity.this, EditUser.class);
+                        startActivity(intent);
+                    }
                 } else if (id == R.id.logout) {
-                    editorShared = sharedPreferences.edit();
-                    editorShared.putString("login", "0");
-                    editorShared.putString("username", "");
-                    editorShared.putString("password", "");
-                    editorShared.commit();
-
-                    Intent intent = new Intent(MainActivity.this, Login.class);
-                    startActivity(intent);
+                    logoutDialog("Đăng xuất", "Bạn có chắc chắn muốn đăng xuất?");
 //                    finish();
                 } else if (id == R.id.trangchu) {
                     Intent intent = new Intent(MainActivity.this, MainActivity.class);
@@ -183,6 +191,7 @@ public class MainActivity extends AppCompatActivity
         callCategory.enqueue(new Callback<List<CategoryResponse>>() {
             @Override
             public void onResponse(Call<List<CategoryResponse>> call, Response<List<CategoryResponse>> response) {
+                txtDanhMuc.setText("Danh mục sản phẩm");
                 List<CategoryResponse> list = new ArrayList<>();
                 list = response.body();
                 AdapterCategory ac = new AdapterCategory(MainActivity.this, list);
@@ -210,7 +219,14 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+        String nameItem = edtSearch.getText().toString();
+        String idSearch = "search";
+
         Toast.makeText(MainActivity.this, edtSearch.getText().toString(), Toast.LENGTH_LONG).show();
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.add(R.id.container, ListItemFragment.newInstance(idSearch, nameItem));
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
         return false;
     }
 
@@ -238,4 +254,40 @@ public class MainActivity extends AppCompatActivity
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
+
+    public void logoutDialog(String title, String message) {
+        final AlertDialog.Builder builderSinger = new AlertDialog.Builder(this);
+        builderSinger.setIcon(R.drawable.alert);
+        builderSinger.setTitle(title);
+        builderSinger.setMessage(message);
+
+        builderSinger.setPositiveButton(
+                "Đồng ý",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int i) {
+                        editorShared = sharedPreferences.edit();
+                        editorShared.putString("login", "0");
+                        editorShared.putString("loginType", "0");
+                        editorShared.commit();
+
+                        Intent intent = new Intent(MainActivity.this, Login.class);
+                        startActivity(intent);
+                    }
+                }
+        );
+
+        builderSinger.setNegativeButton(
+                "Hủy bỏ",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int i) {
+
+                    }
+                }
+        );
+
+        builderSinger.show();
+    }
+
 }

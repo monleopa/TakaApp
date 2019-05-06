@@ -34,9 +34,9 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
     public void init(){
         edtResTaikhoan = findViewById(R.id.edtResTaikhoan);
         edtResMatkhau = findViewById(R.id.edtResMatkhau);
-        edtResTen = findViewById(R.id.edtResTen);
-        edtResEmail = findViewById(R.id.edtResEmail);
-        edtResSodienthoai = findViewById(R.id.edtResSodienthoai);
+        edtResTen = findViewById(R.id.edtEditName);
+        edtResEmail = findViewById(R.id.edtEditEmail);
+        edtResSodienthoai = findViewById(R.id.edtEditPhone);
         btnResDangky = findViewById(R.id.btnResDangky);
     }
 

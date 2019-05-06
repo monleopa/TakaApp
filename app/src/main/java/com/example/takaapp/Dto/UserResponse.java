@@ -11,6 +11,10 @@ public class UserResponse implements Serializable {
     private String _id;
 
     @Expose
+    @SerializedName("fbId")
+    private String fbId;
+
+    @Expose
     @SerializedName("username")
     private String username;
 
@@ -34,14 +38,23 @@ public class UserResponse implements Serializable {
     @SerializedName("avatar")
     private String avatar;
 
-    public UserResponse(String _id, String username, String password, String name, String phone, String email, String avatar) {
+    public UserResponse(String _id, String fbId, String username, String password, String name, String phone, String email, String avatar) {
         this._id = _id;
+        this.fbId = fbId;
         this.username = username;
         this.password = password;
         this.name = name;
         this.phone = phone;
         this.email = email;
         this.avatar = avatar;
+    }
+
+    public String getFbId() {
+        return fbId;
+    }
+
+    public void setFbId(String fbId) {
+        this.fbId = fbId;
     }
 
     public String get_id() {

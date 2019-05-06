@@ -1,6 +1,7 @@
 package com.example.takaapp;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.FragmentManager;
@@ -14,14 +15,22 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.example.takaapp.Dto.ItemResponse;
+import com.example.takaapp.Dto.OrderResponse;
+import com.example.takaapp.Dto.UserRequest;
+import com.example.takaapp.Service.APIService;
 
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class AdapterCart extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     List<ItemResponse> list;
     private FragmentManager fragmentManager;
     private OnItemClickLisener mListener;
+    SharedPreferences sharedPreferences;
 
 
     public interface OnItemClickLisener {
@@ -94,5 +103,11 @@ public class AdapterCart extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     public void removeItem(int position) {
         list.remove(position);
         notifyItemRemoved(position);
+    }
+
+    public String takeIdItem(int position) {
+        ItemResponse item = list.get(position);
+
+        return item.get_id();
     }
 }

@@ -47,6 +47,7 @@
                 android:ems="10"
                 android:hint="Nhập tên sản phẩm"
                 android:inputType="textPersonName"
+                android:imeOptions="actionDone"
                 android:padding="10dp"
                 android:textColor="@color/black"
                 android:textColorHint="@android:color/black"

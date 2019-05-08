@@ -273,12 +273,17 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
         String nameItem = edtSearch.getText().toString();
-        String idSearch = "search";
+        if(nameItem.equals("")) {
+        }
+        else
+            {
+            String idSearch = "search";
 //        Toast.makeText(MainActivity.this, edtSearch.getText().toString(), Toast.LENGTH_LONG).show();
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.add(R.id.container, ListItemFragment.newInstance(idSearch, nameItem));
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.add(R.id.container, ListItemFragment.newInstance(idSearch, nameItem));
+            fragmentTransaction.addToBackStack(null);
+            fragmentTransaction.commit();
+        }
         return false;
     }
 

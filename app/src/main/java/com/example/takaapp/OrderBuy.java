@@ -28,6 +28,7 @@ import com.paypal.android.sdk.payments.PaymentActivity;
 import com.paypal.android.sdk.payments.PaymentConfirmation;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.math.BigDecimal;
 
@@ -78,22 +79,27 @@ public class OrderBuy extends AppCompatActivity {
         btnOrder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                progressDialog.show();
-                progressDialog.setCancelable(false);
-                int selectID = radioGroup.getCheckedRadioButtonId();
-                radioTypeBuy = findViewById(selectID);
-
-                if(selectID == R.id.radio1) {
-                    Log.d("Order", "Order: Thanh toan nhan hang");
-                    processOrder();
+                if(String.valueOf(txtNameOrder.getText()).equals("") || String.valueOf(txtAddressOrder.getText()).equals("") || String.valueOf(txtPhoneOrder.getText()).equals("")){
+                    Toast.makeText(OrderBuy.this, "Không được để trống các trường", Toast.LENGTH_SHORT).show();
                 }
+                else {
+                    progressDialog.show();
+                    progressDialog.setCancelable(false);
+                    int selectID = radioGroup.getCheckedRadioButtonId();
+                    radioTypeBuy = findViewById(selectID);
 
-                if(selectID == R.id.radio2){
-                    Log.d("Order", "Order: Thanh toan bang Paypal");
-                    Intent intent = new Intent(OrderBuy.this, PayPalService.class);
-                    intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, config);
-                    startService(intent);
-                    processPayment();
+                    if (selectID == R.id.radio1) {
+                        Log.d("Order", "Order: Thanh toan nhan hang");
+                        processOrder();
+                    }
+
+                    if (selectID == R.id.radio2) {
+                        Log.d("Order", "Order: Thanh toan bang Paypal");
+                        Intent intent = new Intent(OrderBuy.this, PayPalService.class);
+                        intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, config);
+                        startService(intent);
+                        processPayment();
+                    }
                 }
             }
         });
@@ -143,9 +149,14 @@ public class OrderBuy extends AppCompatActivity {
     }
 
     public void processPayment() {
+
+        String url = "https://free.currconv.com/api/v7/convert?q=USD_VND&compact=ultra&apiKey=b3e4457812e1457910c8";
+
+
+
         amount = getIntent().getStringExtra("Amount");
 
-        amountUSD = (double)(Integer.parseInt(amount)/20000)*1.00;
+        amountUSD = (double)(Integer.parseInt(amount)/23367.7);
 
         PayPalPayment payPalPayment = new PayPalPayment(new BigDecimal(String.valueOf(amountUSD)), "USD",
                 "Payment for TakaApp", PayPalPayment.PAYMENT_INTENT_SALE);

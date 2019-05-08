@@ -82,8 +82,6 @@ public class CartFragment extends Fragment implements AdapterCart.OnItemClickLis
 
         final String cartCode = getArguments().getString("orderCode");
 
-        if(cartCode!=null)
-
         sharedPreferences = getActivity().getSharedPreferences("loginPre", Context.MODE_PRIVATE);
         String login = sharedPreferences.getString("login", "");
         String type = sharedPreferences.getString("loginType", "");

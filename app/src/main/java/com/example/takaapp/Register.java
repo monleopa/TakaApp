@@ -48,34 +48,38 @@ public class Register extends AppCompatActivity implements View.OnClickListener 
         String email = String.valueOf(edtResEmail.getText());
         String phone = String.valueOf(edtResSodienthoai.getText());
 
-        UserRequestRegister user = new UserRequestRegister(username, password, name, email, phone);
+        if(username.equals("") || password.equals("") || name.equals("") || email.equals("") || phone.equals("")){
+            Toast.makeText(Register.this, "Không được để trống các trường", Toast.LENGTH_SHORT).show();
+        } else {
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(GlobalVariable.url)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+            UserRequestRegister user = new UserRequestRegister(username, password, name, email, phone);
 
-        APIService apiService = retrofit.create(APIService.class);
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(GlobalVariable.url)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
 
-        Call<UserResponse> callUser = apiService.register(user);
+            APIService apiService = retrofit.create(APIService.class);
 
-        callUser.enqueue(new Callback<UserResponse>() {
-            @Override
-            public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
-                if(String.valueOf(response.code()).equals("200")){
-                    Toast.makeText(Register.this, "Đăng ký thành công", Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(Register.this, MainActivity.class);
-                    startActivity(intent);
+            Call<UserResponse> callUser = apiService.register(user);
+
+            callUser.enqueue(new Callback<UserResponse>() {
+                @Override
+                public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
+                    if (String.valueOf(response.code()).equals("200")) {
+                        Toast.makeText(Register.this, "Đăng ký thành công", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(Register.this, MainActivity.class);
+                        startActivity(intent);
+                    } else {
+                        Toast.makeText(Register.this, "Không thành công", Toast.LENGTH_SHORT).show();
+                    }
                 }
-                else {
-                    Toast.makeText(Register.this, "Không thành công", Toast.LENGTH_SHORT).show();
-                }
-            }
 
-            @Override
-            public void onFailure(Call<UserResponse> call, Throwable t) {
-                t.printStackTrace();
-            }
-        });
+                @Override
+                public void onFailure(Call<UserResponse> call, Throwable t) {
+                    t.printStackTrace();
+                }
+            });
+        }
     }
 }

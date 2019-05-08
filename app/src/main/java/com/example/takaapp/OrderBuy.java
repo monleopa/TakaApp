@@ -1,6 +1,8 @@
 package com.example.takaapp;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.annotation.Nullable;
@@ -47,8 +49,13 @@ public class OrderBuy extends AppCompatActivity {
     RadioGroup radioGroup;
     RadioButton radioTypeBuy;
     String amount = "";
+    double amountUSD;
+
+
 
     private SharedPreferences sharedPreferences;
+
+    ProgressDialog progressDialog;
 
     @Override
     protected void onDestroy() {
@@ -59,11 +66,8 @@ public class OrderBuy extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        progressDialog = new ProgressDialog(OrderBuy.this);
         setContentView(R.layout.activity_order_buy);
-
-        Intent intent = new Intent(this, PayPalService.class);
-        intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, config);
-        startService(intent);
 
         txtNameOrder = findViewById(R.id.txtNameOrder);
         txtAddressOrder = findViewById(R.id.txtAddressOrder);
@@ -74,13 +78,21 @@ public class OrderBuy extends AppCompatActivity {
         btnOrder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                progressDialog.show();
+                progressDialog.setCancelable(false);
                 int selectID = radioGroup.getCheckedRadioButtonId();
                 radioTypeBuy = findViewById(selectID);
+
                 if(selectID == R.id.radio1) {
+                    Log.d("Order", "Order: Thanh toan nhan hang");
                     processOrder();
                 }
 
                 if(selectID == R.id.radio2){
+                    Log.d("Order", "Order: Thanh toan bang Paypal");
+                    Intent intent = new Intent(OrderBuy.this, PayPalService.class);
+                    intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, config);
+                    startService(intent);
                     processPayment();
                 }
             }
@@ -88,6 +100,7 @@ public class OrderBuy extends AppCompatActivity {
     }
 
     public void processOrder() {
+        sharedPreferences = getSharedPreferences("loginPre", MODE_PRIVATE);
         String name = txtNameOrder.getText().toString();
         String address = txtAddressOrder.getText().toString();
         String phone = txtPhoneOrder.getText().toString();
@@ -111,9 +124,14 @@ public class OrderBuy extends AppCompatActivity {
         callBuy.enqueue(new Callback<OrderResponse>() {
             @Override
             public void onResponse(Call<OrderResponse> call, Response<OrderResponse> response) {
-                if(String.valueOf(response.code()) == "200"){
+                progressDialog.dismiss();
+                if(response.code() == 200){
                     Intent intent = new Intent(OrderBuy.this, BuyResult.class);
+                    intent.putExtra("Code", response.body().get_id());
+                    intent.putExtra("OrderType", "NotPay");
+                    intent.putExtra("total", response.body().getTotal() );
                     startActivity(intent);
+                } else {
                 }
             }
 
@@ -125,13 +143,17 @@ public class OrderBuy extends AppCompatActivity {
     }
 
     public void processPayment() {
-        amount = "500";
-        PayPalPayment payPalPayment = new PayPalPayment(new BigDecimal(String.valueOf(amount)), "USD",
-                "Success Payment", PayPalPayment.PAYMENT_INTENT_SALE);
+        amount = getIntent().getStringExtra("Amount");
+
+        amountUSD = (double)(Integer.parseInt(amount)/20000)*1.00;
+
+        PayPalPayment payPalPayment = new PayPalPayment(new BigDecimal(String.valueOf(amountUSD)), "USD",
+                "Payment for TakaApp", PayPalPayment.PAYMENT_INTENT_SALE);
         Intent intent = new Intent(this, PaymentActivity.class);
 
         intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, config);
         intent.putExtra(PaymentActivity.EXTRA_PAYMENT, payPalPayment);
+        progressDialog.dismiss();
         Log.d("Pay", "OK 1");
         startActivityForResult(intent, PAYPAL_REQUEST_CODE);
     }
@@ -143,16 +165,48 @@ public class OrderBuy extends AppCompatActivity {
             if(resultCode == RESULT_OK){
                 PaymentConfirmation confirmation = data.getParcelableExtra(PaymentActivity.EXTRA_RESULT_CONFIRMATION);
                 if(confirmation != null){
-                    try {
-                        String paymentDetail = confirmation.toJSONObject().toString(4);
-                        startActivity(new Intent(this, BuyResult.class)
-                                .putExtra("PaymentDetails", paymentDetail)
-                                .putExtra("PaymentAmount", amount));
+                    progressDialog.show();
+                    progressDialog.setCancelable(false);
+                    final Intent intent = new Intent(this, BuyResult.class);
+                    sharedPreferences = getSharedPreferences("loginPre", MODE_PRIVATE);
+                    String name = txtNameOrder.getText().toString();
+                    String address = txtAddressOrder.getText().toString();
+                    String phone = txtPhoneOrder.getText().toString();
 
+                    String userId = sharedPreferences.getString("login", "");
+                    String loginType = sharedPreferences.getString("loginType", "");
 
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
+                    UserRequest user = new UserRequest(userId, loginType);
+
+                    OrderBuyRequest orderBuyRequest = new OrderBuyRequest(user, name, address, phone, "PayPal");
+
+                    Retrofit retrofit = new Retrofit.Builder()
+                            .baseUrl(GlobalVariable.url)
+                            .addConverterFactory(GsonConverterFactory.create())
+                            .build();
+
+                    APIService apiService = retrofit.create(APIService.class);
+
+                    Call<OrderResponse> callBuy = apiService.executeOrder(orderBuyRequest);
+
+                    callBuy.enqueue(new Callback<OrderResponse>() {
+                        @Override
+                        public void onResponse(Call<OrderResponse> call, Response<OrderResponse> response) {
+                            if(response.code() == 200){
+                                intent.putExtra("Code", response.body().get_id());
+                                intent.putExtra("OrderType", "PayPal");
+                                intent.putExtra("PaymentAmount", String.valueOf(amountUSD));
+                                progressDialog.dismiss();
+                                startActivity(intent);
+                            } else {
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<OrderResponse> call, Throwable t) {
+
+                        }
+                    });
                 }
                 else if (resultCode == Activity.RESULT_CANCELED){
                     Toast.makeText(this, "Cancel", Toast.LENGTH_SHORT).show();

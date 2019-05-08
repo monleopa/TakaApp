@@ -1,5 +1,6 @@
 package com.example.takaapp;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -37,6 +38,7 @@ public class DetailItemFrangment extends Fragment implements View.OnClickListene
     TextView txtItemDetailName, txtItemDetailPrice, txtBrand, txtSoLuong, txtNumber;
     Button btnDatMua, btnCongSoLuong, btnTruSoLuong;
     SharedPreferences sharedPreferences;
+    ProgressDialog progressDialog;
 
 
     public static Fragment newInstance(ItemResponse itemResponse) {
@@ -117,6 +119,9 @@ public class DetailItemFrangment extends Fragment implements View.OnClickListene
     }
 
     public void addToCart(){
+        progressDialog = new ProgressDialog(getActivity());
+        progressDialog.show();
+        progressDialog.setCancelable(false);
         ItemResponse itemResponse = (ItemResponse) getArguments().getSerializable("item");
         int soluong = Integer.parseInt(txtSoLuong.getText().toString());
 
@@ -143,13 +148,13 @@ public class DetailItemFrangment extends Fragment implements View.OnClickListene
         callOrder.enqueue(new Callback<OrderResponse>() {
             @Override
             public void onResponse(Call<OrderResponse> call, Response<OrderResponse> response) {
-                Log.d("response", String.valueOf(response.code()));
+                progressDialog.dismiss();
                 if (String.valueOf(response.code()).equals("200")) {
                     Toast.makeText(getActivity(), "Thêm vào giỏ hàng thành công", Toast.LENGTH_SHORT).show();
                     OrderResponse order = response.body();
                     txtNumber.setText(order.getItems().size()+"");
                 } else {
-                    Toast.makeText(getActivity(), "Không thành công", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "Sản phẩm đã hết hàng", Toast.LENGTH_SHORT).show();
                 }
             }
 

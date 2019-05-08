@@ -58,4 +58,16 @@ public interface APIService {
 
     @PUT("orders/delete_from_cart/{itemId}")
     Call<OrderResponse> deleteFromCart(@Path("itemId") String itemId, @Body UserRequest userRequest);
+
+    @GET("items/new_items/10")
+    Call<List<ItemResponse>> getNewItems();
+
+    @GET("items/best_selling/10")
+    Call<List<ItemResponse>> getBestSelling();
+
+    @POST("orders/of_user")
+    Call<List<OrderResponse>> getAllOrders(@Body UserRequest user);
+
+    @POST("orders/order_of_user/{id}")
+    Call<OrderResponse> getOrderDetail(@Body UserRequest user, @Path("id") String id);
 }

@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,6 +29,8 @@ public class ListItemFragment extends Fragment {
 
     private RecyclerView recycle_item;
     private TextView txtCategoryItem;
+
+    private ProgressBar progressBarListItem;
 
     public static Fragment newInstance(String categoryID, String categoryName) {
         Fragment fragment = new ListItemFragment();
@@ -52,6 +55,9 @@ public class ListItemFragment extends Fragment {
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.fragment_list_item, container, false);
         recycle_item = view.findViewById(R.id.recycle_item);
         txtCategoryItem = view.findViewById(R.id.txtCategoryItem);
+        progressBarListItem = view.findViewById(R.id.progressBarListItem);
+
+        Log.d("Test", "Vao dc nhe");
 
         final String categoryID = getArguments().getString("categoryID");
         final String categoryName = getArguments().getString("categoryName");
@@ -71,6 +77,7 @@ public class ListItemFragment extends Fragment {
             callItems.enqueue(new Callback<List<ItemResponse>>() {
                 @Override
                 public void onResponse(Call<List<ItemResponse>> call, Response<List<ItemResponse>> response) {
+                    progressBarListItem.setVisibility(View.GONE);
                     if (String.valueOf(response.code()).equals("200")) {
                         List<ItemResponse> list = response.body();
                         if(list.size() > 0){
@@ -105,10 +112,10 @@ public class ListItemFragment extends Fragment {
             callItems.enqueue(new Callback<List<ItemResponse>>() {
                 @Override
                 public void onResponse(Call<List<ItemResponse>> call, Response<List<ItemResponse>> response) {
+                    progressBarListItem.setVisibility(View.GONE);
                     if (String.valueOf(response.code()).equals("200")) {
                         List<ItemResponse> list = response.body();
                         if (list.size() > 0) {
-                            Log.d("TEST","so luong: "+list.size() );
                             txtCategoryItem.setText(categoryName);
                             AdapterItems ai = new AdapterItems(getActivity().getSupportFragmentManager(), list);
                             recycle_item.setAdapter(ai);

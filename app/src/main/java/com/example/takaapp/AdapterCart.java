@@ -94,7 +94,6 @@ public class AdapterCart extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             txtNameCart.setText(itemResponse.getName());
             txtPriceCart.setText(String.valueOf(itemResponse.getPrice()) + " đ");
             txtSoluongCart.setText(String.valueOf(itemResponse.getNumber()));
-
             Glide.with(context).load(itemResponse.getImg()).into(imgItemCart);
         }
 

@@ -1,5 +1,6 @@
 package com.example.takaapp;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
@@ -20,17 +21,9 @@ import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
-import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
 import com.facebook.Profile;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -51,6 +44,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
 
     private String nameFb = "";
     private String avatar = null;
+    ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,11 +67,14 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         mCallbackManager = CallbackManager.Factory.create();
         LoginButton loginButton = findViewById(R.id.buttonFacebookLogin);
         loginButton.setReadPermissions("email", "public_profile");
-
         loginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
 //                Log.d(TAG, "facebook:onSuccess:" + loginResult);
+                progressDialog = new ProgressDialog(Login.this);
+                progressDialog.show();
+                progressDialog.setCancelable(false);
+
                 sharedPreferences = getSharedPreferences("loginPre", MODE_PRIVATE);
                 editorShared = sharedPreferences.edit();
                 editorShared.putString("login", loginResult.getAccessToken().getUserId());
@@ -110,6 +107,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                 callUser.enqueue(new Callback<UserResponse>() {
                     @Override
                     public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
+                        progressDialog.dismiss();
                         if(String.valueOf(response.code()).equals("200")) {
                             Intent intent = new Intent(Login.this, MainActivity.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -124,30 +122,6 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                     }
                 });
             }
-
-
-
-//            protected void getNameFaceBook(final LoginResult loginResult){
-//                GraphRequest request = GraphRequest.newMeRequest(loginResult.getAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
-//                    @Override
-//                    public void onCompleted(JSONObject object, GraphResponse response) {
-//                        try {
-//
-//                            Log.d(TAG, "avatar: " + avatar);
-//                            Log.d(TAG, "test: " + object.getString("name"));
-//                            nameFb = object.getString("name");
-//                            Log.d(TAG, "test 3: " + nameFb);
-//
-//
-//
-//                        } catch (JSONException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                });
-//
-//                request.executeAsync();
-//            }
 
             @Override
             public void onCancel() {
@@ -214,10 +188,14 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
+        progressDialog  = new ProgressDialog(this);
+        progressDialog.show();
+        progressDialog.setCancelable(false);
+
         String username = String.valueOf(edtTaikhoan.getText());
         String password = String.valueOf(edtMatkhau.getText());
 
-        UserRequestLogin user = new UserRequestLogin("","NORMAL","","",username, password);
+        UserRequestLogin user = new UserRequestLogin("", "NORMAL", "", "", username, password);
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(GlobalVariable.url)
@@ -231,7 +209,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         callUser.enqueue(new Callback<UserResponse>() {
             @Override
             public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
-
+                progressDialog.dismiss();
                 if (String.valueOf(response.code()).equals("200")) {
                     UserResponse userResponse = response.body();
                     sharedPreferences = getSharedPreferences("loginPre", MODE_PRIVATE);
@@ -259,4 +237,11 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         Intent intent = new Intent(Login.this, Register.class);
         startActivity(intent);
     }
+
+    @Override
+    public void onBackPressed() {
+
+    }
+
+
 }

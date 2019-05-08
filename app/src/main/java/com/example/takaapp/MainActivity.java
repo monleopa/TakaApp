@@ -25,17 +25,20 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.takaapp.Dto.CategoryResponse;
+import com.example.takaapp.Dto.ItemResponse;
 import com.example.takaapp.Dto.OrderResponse;
 import com.example.takaapp.Dto.UserRequest;
 import com.example.takaapp.Dto.UserRequestLogin;
 import com.example.takaapp.Dto.UserRequestRegister;
 import com.example.takaapp.Dto.UserResponse;
 import com.example.takaapp.Service.APIService;
+import com.facebook.login.LoginManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,16 +50,17 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity
-        implements View.OnClickListener, TextView.OnEditorActionListener, AdapterCategory.OnItemClick {
+        implements View.OnClickListener, TextView.OnEditorActionListener, AdapterCategory.OnItemClick, AdapterNew.OnItemClick {
 
     private DrawerLayout dl;
     private ActionBarDrawerToggle abdt;
     private ImageView imgMenu;
     private EditText edtSearch;
-    private RecyclerView recycle_category;
+    private RecyclerView recycle_category, recycle_new, recycle_sale;
     private ImageView imgAvatar;
     private TextView header_username, header_email, txtNumber, txtDanhMuc;
-
+    private TextView txtNew, txtSale;
+    private ProgressBar progressBar;
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editorShared;
 
@@ -68,6 +72,7 @@ public class MainActivity extends AppCompatActivity
         sharedPreferences = getSharedPreferences("loginPre", MODE_PRIVATE);
 
         imgMenu = findViewById(R.id.imgMenu);
+        progressBar = findViewById(R.id.progressBar);
 
         imgMenu.setOnClickListener(this);
 
@@ -82,6 +87,10 @@ public class MainActivity extends AppCompatActivity
         imgMenu = findViewById(R.id.imgMenu);
         edtSearch = findViewById(R.id.edtSearch);
         txtDanhMuc = findViewById(R.id.txtDanhMuc);
+        txtNew = findViewById(R.id.txtNew);
+        txtSale = findViewById(R.id.txtSale);
+        recycle_new = findViewById(R.id.recycle_new);
+        recycle_sale = findViewById(R.id.recycle_sale);
         edtSearch.setOnEditorActionListener(this);
 
         NavigationView nav_view = findViewById(R.id.nav_view);
@@ -154,9 +163,15 @@ public class MainActivity extends AppCompatActivity
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 int id = item.getItemId();
                 if (id == R.id.profile) {
-                    Toast.makeText(MainActivity.this, "My Profile", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(MainActivity.this, EditUser.class);
+                    intent.putExtra("check", "infor");
+                    startActivity(intent);
+//                    Toast.makeText(MainActivity.this, "My Profile", Toast.LENGTH_SHORT).show();
                 } else if (id == R.id.danhmuc) {
-                    Toast.makeText(MainActivity.this, "Settings", Toast.LENGTH_SHORT).show();
+                    FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                    fragmentTransaction.add(R.id.container, OrderManagerFrament.newInstance());
+                    fragmentTransaction.addToBackStack(null);
+                    fragmentTransaction.commit();
                 } else if (id == R.id.editprofile) {
                     String loginType = sharedPreferences.getString("loginType", "");
                     if(loginType.equals("FB"))
@@ -165,6 +180,7 @@ public class MainActivity extends AppCompatActivity
                     }
                     else {
                         Intent intent = new Intent(MainActivity.this, EditUser.class);
+                        intent.putExtra("check", "edit");
                         startActivity(intent);
                     }
                 } else if (id == R.id.logout) {
@@ -202,6 +218,43 @@ public class MainActivity extends AppCompatActivity
             public void onFailure(Call<List<CategoryResponse>> call, Throwable t) {
             }
         });
+
+        Call<List<ItemResponse>> callNew = apiService.getNewItems();
+        callNew.enqueue(new Callback<List<ItemResponse>>() {
+            @Override
+            public void onResponse(Call<List<ItemResponse>> call, Response<List<ItemResponse>> response) {
+                if(response.code() == 200){
+                    txtNew.setText("Sản phẩm mới");
+                    List<ItemResponse> list = response.body();
+                    AdapterNew an = new AdapterNew(list, MainActivity.this);
+                    recycle_sale.setAdapter(an);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<ItemResponse>> call, Throwable t) {
+
+            }
+        });
+
+        Call<List<ItemResponse>> callSale = apiService.getBestSelling();
+        callSale.enqueue(new Callback<List<ItemResponse>>() {
+            @Override
+            public void onResponse(Call<List<ItemResponse>> call, Response<List<ItemResponse>> response) {
+                if(response.code() == 200){
+                    txtSale.setText("Sản phẩm bán chạy");
+                    List<ItemResponse> list = response.body();
+                    AdapterNew an = new AdapterNew(list, MainActivity.this);
+                    progressBar.setVisibility(View.GONE);
+                    recycle_new.setAdapter(an);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<ItemResponse>> call, Throwable t) {
+
+            }
+        });
     }
 
     @Override
@@ -221,8 +274,7 @@ public class MainActivity extends AppCompatActivity
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
         String nameItem = edtSearch.getText().toString();
         String idSearch = "search";
-
-        Toast.makeText(MainActivity.this, edtSearch.getText().toString(), Toast.LENGTH_LONG).show();
+//        Toast.makeText(MainActivity.this, edtSearch.getText().toString(), Toast.LENGTH_LONG).show();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.add(R.id.container, ListItemFragment.newInstance(idSearch, nameItem));
         fragmentTransaction.addToBackStack(null);
@@ -234,8 +286,6 @@ public class MainActivity extends AppCompatActivity
     public void onBackPressed() {
         if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
             getSupportFragmentManager().popBackStack();
-        } else {
-            super.onBackPressed();
         }
     }
 
@@ -270,7 +320,7 @@ public class MainActivity extends AppCompatActivity
                         editorShared.putString("login", "0");
                         editorShared.putString("loginType", "0");
                         editorShared.commit();
-
+                        LoginManager.getInstance().logOut();
                         Intent intent = new Intent(MainActivity.this, Login.class);
                         startActivity(intent);
                     }
@@ -288,6 +338,14 @@ public class MainActivity extends AppCompatActivity
         );
 
         builderSinger.show();
+    }
+
+    @Override
+    public void onNewClick(ItemResponse itemResponse) {
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.add(R.id.container, DetailItemFrangment.newInstance(itemResponse));
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
     }
 
 }

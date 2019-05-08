@@ -11,7 +11,7 @@
         <item
             android:id="@+id/danhmuc"
             android:icon="@drawable/ic_format_list_bulleted_black_24dp"
-            android:title="Danh mục sản phẩm" />
+            android:title="Quản lý đơn hàng" />
         <item
             android:id="@+id/profile"
             android:icon="@drawable/ic_account_circle_black_24dp"
@@ -27,17 +27,21 @@
             android:title="Đăng xuất" />
     </group>
 
-    <!--<item android:title="Communicate">-->
-        <!--<menu>-->
-            <!--<item-->
-                <!--android:id="@+id/nav_share"-->
-                <!--android:icon="@drawable/ic_menu_share"-->
-                <!--android:title="Share" />-->
-            <!--<item-->
-                <!--android:id="@+id/nav_send"-->
-                <!--android:icon="@drawable/ic_menu_send"-->
-                <!--android:title="Send" />-->
-        <!--</menu>-->
-    <!--</item>-->
+    <item android:title="Hỗ trợ">
+        <menu>
+            <item
+                android:id="@+id/nav_hot"
+                android:icon="@drawable/ic_phone_black_24dp"
+                android:title="Hot line: 19001004" />
+            <item
+                android:id="@+id/nav_phone"
+                android:icon="@drawable/ic_smartphone_black_24dp"
+                android:title="0971366898" />
+            <item
+                android:id="@+id/nav_email"
+                android:icon="@drawable/ic_email_black_24dp"
+                android:title="support@taka.com.vn" />
+        </menu>
+    </item>
 
 </menu>

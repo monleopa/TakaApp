@@ -16,6 +16,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -46,8 +48,11 @@ public class EditUser extends AppCompatActivity {
     Button btnUpload, btnPick;
     ImageView imgEditAvatar;
     EditText edtEditName, edtEditPhone, edtEditEmail;
+    TextView txtTitle;
 
     Uri imgUri;
+
+    String check;
 
     private final int PICK_IMAGE_REQUEST = 71;
 
@@ -55,6 +60,7 @@ public class EditUser extends AppCompatActivity {
     StorageReference storageReference;
     SharedPreferences sharedPreferences;
     String avatar;
+    ProgressBar progressBarEdit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,14 +69,18 @@ public class EditUser extends AppCompatActivity {
 
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
+        progressBarEdit = findViewById(R.id.progressBarEdit);
 
         btnUpload = findViewById(R.id.btnUpload);
         imgEditAvatar = findViewById(R.id.imgEditAvatar);
         btnPick = findViewById(R.id.btnPick);
+        txtTitle = findViewById(R.id.txtTitle);
 
         edtEditName = findViewById(R.id.edtEditName);
         edtEditPhone = findViewById(R.id.edtEditPhone);
         edtEditEmail = findViewById(R.id.edtEditEmail);
+
+        check = getIntent().getStringExtra("check");
 
         sharedPreferences = getSharedPreferences("loginPre", MODE_PRIVATE);
         final String userId = sharedPreferences.getString("login", "");
@@ -91,8 +101,10 @@ public class EditUser extends AppCompatActivity {
         callUser.enqueue(new Callback<UserResponse>() {
             @Override
             public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
-
+                progressBarEdit.setVisibility(View.GONE);
                 if (String.valueOf(response.code()).equals("200")) {
+
+
                     UserResponse userResponse = response.body();
                     edtEditName.setText(userResponse.getName());
                     edtEditEmail.setText(userResponse.getEmail());
@@ -101,7 +113,20 @@ public class EditUser extends AppCompatActivity {
                         Glide.with(EditUser.this).load(userResponse.getAvatar()).into(imgEditAvatar);
                     }
 
-                    avatar = userResponse.getAvatar();
+                    if(check.equals("edit")){
+                        txtTitle.setText("Chỉnh sửa thông tin");
+                        avatar = userResponse.getAvatar();
+                    }
+                    else {
+                        txtTitle.setText("Thông tin cá nhân");
+                        btnPick.setVisibility(View.GONE);
+                        btnUpload.setVisibility(View.GONE);
+
+                        edtEditPhone.setEnabled(false);
+                        edtEditEmail.setEnabled(false);
+                        edtEditName.setEnabled(false);
+                    }
+
                 }
             }
 
@@ -159,12 +184,13 @@ public class EditUser extends AppCompatActivity {
         if(imgUri != null) {
             final ProgressDialog progressDialog = new ProgressDialog(this);
             progressDialog.show();
+            progressDialog.setCancelable(false);
             final StorageReference ref = storageReference.child("images/"+ UUID.randomUUID().toString());
             ref.putFile(imgUri)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            progressDialog.dismiss();
+
                         }
                     })
                     .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
@@ -209,6 +235,7 @@ public class EditUser extends AppCompatActivity {
                                 callUpdateUser.enqueue(new Callback<UserResponse>() {
                                     @Override
                                     public void onResponse(Call<UserResponse> call, Response<UserResponse> response) {
+                                        progressDialog.dismiss();
                                         Log.d("log", "log: "+response.code());
                                         if(response.code() == 200)
                                         {

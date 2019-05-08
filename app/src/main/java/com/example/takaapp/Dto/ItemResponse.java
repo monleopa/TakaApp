@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.List;
 
 public class ItemResponse implements Serializable {
     @Expose
@@ -15,8 +16,8 @@ public class ItemResponse implements Serializable {
     private String name;
 
     @Expose
-    @SerializedName("property")
-    private String[] property;
+    @SerializedName("properties")
+    private List<String> properties;
 
     @Expose
     @SerializedName("brand")
@@ -34,10 +35,10 @@ public class ItemResponse implements Serializable {
     @SerializedName("price")
     private long price;
 
-    public ItemResponse(String _id, String name, String[] property, String brand, String img, int number, long price) {
+    public ItemResponse(String _id, String name, List<String> property, String brand, String img, int number, long price) {
         this._id = _id;
         this.name = name;
-        this.property = property;
+        this.properties = property;
         this.brand = brand;
         this.img = img;
         this.number = number;
@@ -60,12 +61,12 @@ public class ItemResponse implements Serializable {
         this.name = name;
     }
 
-    public String[] getProperty() {
-        return property;
+    public List<String> getProperties() {
+        return properties;
     }
 
-    public void setProperty(String[] property) {
-        this.property = property;
+    public void setProperties(List<String> property) {
+        this.properties = property;
     }
 
     public String getBrand() {

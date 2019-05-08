@@ -35,7 +35,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class DetailItemFrangment extends Fragment implements View.OnClickListener {
 
     ImageView imgItemDetail;
-    TextView txtItemDetailName, txtItemDetailPrice, txtBrand, txtSoLuong, txtNumber;
+    TextView txtItemDetailName, txtItemDetailPrice, txtBrand, txtSoLuong, txtNumber, txtProperty;
     Button btnDatMua, btnCongSoLuong, btnTruSoLuong;
     SharedPreferences sharedPreferences;
     ProgressDialog progressDialog;
@@ -72,6 +72,7 @@ public class DetailItemFrangment extends Fragment implements View.OnClickListene
         btnCongSoLuong = view.findViewById(R.id.btnCongSoLuong);
         btnTruSoLuong = view.findViewById(R.id.btnTruSoLuong);
         txtSoLuong = view.findViewById(R.id.txtSoLuong);
+        txtProperty = view.findViewById(R.id.txtProperty);
         txtNumber = getActivity().findViewById(R.id.txtNumber);
 
         ItemResponse itemResponse = (ItemResponse) getArguments().getSerializable("item");
@@ -80,6 +81,20 @@ public class DetailItemFrangment extends Fragment implements View.OnClickListene
         txtItemDetailName.setText(itemResponse.getName());
         txtBrand.setText(itemResponse.getBrand());
         txtItemDetailPrice.setText(String.valueOf(itemResponse.getPrice()) + " đ");
+//
+//        Log.d("detailitem", "detail: "+itemResponse.getProperties().size());
+//
+        String property = "Thông số kỹ thuật: \n";
+
+        for(int j=0; j < itemResponse.getProperties().size(); j++) {
+            if(j == itemResponse.getProperties().size() - 1){
+                property = property + itemResponse.getProperties().get(j);
+            } else {
+                property = property + itemResponse.getProperties().get(j)+"\n";
+            }
+        }
+
+        txtProperty.setText(property);
 
         btnCongSoLuong.setOnClickListener(this);
         btnTruSoLuong.setOnClickListener(this);

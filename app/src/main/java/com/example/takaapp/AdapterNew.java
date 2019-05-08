@@ -74,6 +74,8 @@ public class AdapterNew extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         }
 
         public void bindData(ItemResponse itemResponse) {
+            System.out.println(itemResponse.getName());
+
             txtNameNew.setText(itemResponse.getName());
 
             txtPriceNew.setText(String.valueOf(itemResponse.getPrice()) + " đ");
